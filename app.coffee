@@ -33,9 +33,9 @@ exports.createServer = ->
     week = moment().subtract(3, 'days').week()
 
     history = readHistory()
-    history[req.body.name] ?= {}
-    history[req.body.name][moment().year()] ?= {} 
-    history[req.body.name][moment().year()][week] = +completed / +total
+    history[req.body.sender_id] ?= {}
+    history[req.body.sender_id][moment().year()] ?= {} 
+    history[req.body.sender_id][moment().year()][week] = +completed / +total
     writeHistory history
 
     totalPercents = (value for key, value of history[req.body.name][moment().year()]).reduce (a, b) -> a + b
