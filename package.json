@@ -1,0 +1,18 @@
+{
+  "name": "workout_butler",
+  "version": "0.0.1",
+  "description": "workout butler ===========",
+  "main": "app.coffee",
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "coffee-script": "~1.7",
+    "express": "^4.13.3",
+    "moment": "^2.11.0",
+    "request": "^2.22.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "bryceredd",
+  "license": "BSD"
+}
