@@ -18,6 +18,7 @@ exports.createServer = ->
   app.use bodyParser.json()
 
   app.post "/", (req, res) ->
+
     console.log req.body
     return unless req.body.sender_type is 'user'
 
@@ -28,11 +29,13 @@ exports.createServer = ->
     total = +matches[2]
     
     return if total == 0
+ 
+    week = moment().subtract(3, 'days').week()
 
     history = readHistory()
     history[req.body.name] ?= {}
     history[req.body.name][moment().year()] ?= {} 
-    history[req.body.name][moment().year()][moment().week()] = +completed / +total
+    history[req.body.name][moment().year()][week] = +completed / +total
     writeHistory history
 
     totalPercents = (value for key, value of history[req.body.name][moment().year()]).reduce (a, b) -> a + b
@@ -40,7 +43,7 @@ exports.createServer = ->
     
     body = {
       bot_id: BOT_ID,
-      text: "Master #{req.body.name}, #{completed}/#{total} for week #{moment().week()} brings you to #{percent * 100}% for the year"
+      text: "Master #{req.body.name}, #{completed}/#{total} for week #{week} brings you to #{percent * 100}% for the year"
     }
 
     request.post {url: "https://api.groupme.com/v3/bots/post", json: true, body}, (e, r, b) ->
