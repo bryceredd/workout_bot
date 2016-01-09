@@ -40,14 +40,16 @@ exports.createServer = ->
 
     totalPercents = (value for key, value of history[req.body.sender_id][moment().year()]).reduce (a, b) -> a + b
     percent = totalPercents / (Object.keys(history[req.body.sender_id][moment().year()]).length || 1)
+    percent = Math.floor(percent * 100)
     
     body = {
       bot_id: BOT_ID,
-      text: "Master #{req.body.name}, #{completed}/#{total} for week #{week} brings you to #{percent * 100}% for the year"
+      text: "Master #{req.body.name}, #{completed}/#{total} for week #{week} brings you to #{percent}% for the year"
     }
 
     request.post {url: "https://api.groupme.com/v3/bots/post", json: true, body}, (e, r, b) ->
       console.log e, b
+      res.send "OK"
 
   app.get "/", (req, res) ->
     res.send "Alive"
