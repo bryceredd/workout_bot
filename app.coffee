@@ -28,7 +28,7 @@ exports.createServer = ->
     completed = +matches[1]
     total = +matches[2]
     
-    return if total == 0
+    total = 1 if +total == 0
  
     week = moment().subtract(3, 'days').week()
 
@@ -38,8 +38,8 @@ exports.createServer = ->
     history[req.body.sender_id][moment().year()][week] = +completed / +total
     writeHistory history
 
-    totalPercents = (value for key, value of history[req.body.name][moment().year()]).reduce (a, b) -> a + b
-    percent = totalPercents / (Object.keys(history[req.body.name][moment().year()]).length || 1)
+    totalPercents = (value for key, value of history[req.body.sender_id][moment().year()]).reduce (a, b) -> a + b
+    percent = totalPercents / (Object.keys(history[req.body.sender_id][moment().year()]).length || 1)
     
     body = {
       bot_id: BOT_ID,
