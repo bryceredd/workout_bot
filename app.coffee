@@ -13,6 +13,18 @@ readHistory = ->
 writeHistory = (data) ->
   fs.writeFileSync WORKOUT_HISTORY_FILE, JSON.stringify data
 
+demotivationalQuote = ->
+  "lul"
+
+sendMessage = (text) ->
+  body = {
+    bot_id: BOT_ID,
+    text
+  }
+
+  request.post {url: "https://api.groupme.com/v3/bots/post", json: true, body}, (e, r, b) ->
+    console.log e, b
+
 exports.createServer = ->
   app = express()
   app.use bodyParser.json()
@@ -27,29 +39,36 @@ exports.createServer = ->
 
     completed = +matches[1]
     total = +matches[2]
-    
+
     total = 1 if +total == 0
- 
+
     week = moment().subtract(3, 'days').week()
+    year = moment().year()
+    senderId = req.body.sender_id
+    isUpdate = history[sender_id][year][week] != null
 
     history = readHistory()
-    history[req.body.sender_id] ?= {}
-    history[req.body.sender_id][moment().year()] ?= {} 
-    history[req.body.sender_id][moment().year()][week] = +completed / +total
+    history[senderId] ?= {}
+    history[senderId][year] ?= {}
+    history[senderId][year][week] = +completed / +total
     writeHistory history
 
-    totalPercents = (value for key, value of history[req.body.sender_id][moment().year()]).reduce (a, b) -> a + b
-    percent = totalPercents / (Object.keys(history[req.body.sender_id][moment().year()]).length || 1)
+    totalPercents = (value for key, value of history[senderId][year]).reduce (a, b) -> a + b
+    percent = totalPercents / (Object.keys(history[senderId][year]).length || 1)
     percent = Math.floor(percent * 100)
-    
-    body = {
-      bot_id: BOT_ID,
-      text: "Master #{req.body.name}, #{completed}/#{total} for week #{week} brings you to #{percent}% for the year"
-    }
 
-    request.post {url: "https://api.groupme.com/v3/bots/post", json: true, body}, (e, r, b) ->
-      console.log e, b
-      res.send "OK"
+    name = (req.body.name?.split ' ')?[0]
+    message = "Master #{name}, this brings you to #{percent}% for #{year}.  "
+    message += switch
+      when percent < 35 then "Do remember, #{demotivationalQuote()}"
+      when percent < 85 then ""
+      else "I offer you my profound praise and admiration."
+
+    if isUpdate then message = "Master #{name}, I've updated your score this week and your yearly percent is now #{percent}%"
+
+    sendMessage message
+
+    res.send "OK"
 
   app.get "/", (req, res) ->
     res.send "Alive"
@@ -60,4 +79,5 @@ if module == require.main
   app.listen port
   console.log """
   Running WORKOUT_BOT on #{port}
+  with BOT_ID #{BOT_ID}
   """
