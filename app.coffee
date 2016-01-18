@@ -64,7 +64,7 @@ exports.createServer = ->
       when percent < 85 then ""
       else "I offer you my profound praise and admiration."
 
-    if isUpdate then message = "Master #{name}, I've updated your score this week and your yearly percent is now #{percent}%"
+    # if isUpdate then message = "Master #{name}, I've updated your score this week and your yearly percent is now #{percent}%"
 
     sendMessage message
 
