@@ -13,14 +13,17 @@ readHistory = ->
 writeHistory = (data) ->
   fs.writeFileSync WORKOUT_HISTORY_FILE, JSON.stringify data
 
-demotivationalQuote = ->
-  "lul"
+randomPicture = ->
+  images = JSON.parse fs.readFileSync "demotivational_images.json"
+  images[Math.floor(Math.random() * images.length)]
 
-sendMessage = (text) ->
+sendMessage = (text, pictureUrl) ->
   body = {
     bot_id: BOT_ID,
     text
   }
+
+  if pictureUrl != null then body.attachments = [{"type": "image", "url": pictureUrl}]
 
   request.post {url: "https://api.groupme.com/v3/bots/post", json: true, body}, (e, r, b) ->
     console.log e, b
@@ -57,17 +60,18 @@ exports.createServer = ->
     totalPercents = (value for key, value of history[senderId][year]).reduce (a, b) -> a + b
     percent = totalPercents / (Object.keys(history[senderId][year]).length || 1)
     percent = Math.floor(percent * 100)
+    pictureUrl = null
 
     name = (req.body.name?.split ' ')?[0]
     message = "Master #{name}, this brings you to #{percent}% for #{year}.  "
     message += switch
-      when weeklyPercent < .35 then "Do remember, #{demotivationalQuote()}"
+      when weeklyPercent < .35 then pictureUrl = randomPicture()
       when weeklyPercent < .85 then ""
-      else "I offer you my profound praise and admiration."
+      else "I profoundly admire your dedication."
 
     # if isUpdate then message = "Master #{name}, I've updated your score this week and your yearly percent is now #{percent}%"
 
-    sendMessage message
+    sendMessage message, pictureUrl
 
     res.send "OK"
 
