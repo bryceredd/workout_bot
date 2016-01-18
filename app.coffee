@@ -61,8 +61,8 @@ exports.createServer = ->
     name = (req.body.name?.split ' ')?[0]
     message = "Master #{name}, this brings you to #{percent}% for #{year}.  "
     message += switch
-      when weeklyPercent < 35 then "Do remember, #{demotivationalQuote()}"
-      when weeklyPercent < 85 then ""
+      when weeklyPercent < .35 then "Do remember, #{demotivationalQuote()}"
+      when weeklyPercent < .85 then ""
       else "I offer you my profound praise and admiration."
 
     # if isUpdate then message = "Master #{name}, I've updated your score this week and your yearly percent is now #{percent}%"
