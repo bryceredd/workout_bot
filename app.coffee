@@ -44,8 +44,9 @@ exports.createServer = ->
 
     week = moment().subtract(3, 'days').week()
     year = moment().year()
+    console.log req.body
     senderId = req.body.sender_id
-    isUpdate = history[sender_id][year][week] != null
+    isUpdate = history[senderId][year][week] != null
 
     history = readHistory()
     history[senderId] ?= {}
