@@ -14,7 +14,7 @@ writeHistory = (data) ->
   fs.writeFileSync WORKOUT_HISTORY_FILE, JSON.stringify data
 
 randomPicture = ->
-  images = JSON.parse fs.readFileSync "demotivational_images.json"
+  images = JSON.parse fs.readFileSync "./demotivational_images.json"
   images[Math.floor(Math.random() * images.length)]
 
 sendMessage = (text, pictureUrl) ->
